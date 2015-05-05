@@ -4,5 +4,7 @@
 
 External\ffft.S
 
+External\libfft.c
+
 main.c
 

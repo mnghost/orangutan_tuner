@@ -38,6 +38,7 @@ SUBDIRS :=  \
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
+../External/libfft.c \
 ../main.c
 
 
@@ -50,18 +51,22 @@ ASM_SRCS +=
 
 OBJS +=  \
 External/ffft.o \
+External/libfft.o \
 main.o
 
 OBJS_AS_ARGS +=  \
 External/ffft.o \
+External/libfft.o \
 main.o
 
 C_DEPS +=  \
 External/ffft.d \
+External/libfft.d \
 main.d
 
 C_DEPS_AS_ARGS +=  \
 External/ffft.d \
+External/libfft.d \
 main.d
 
 OUTPUT_FILE_PATH +=orangutan_tuner.elf
@@ -80,6 +85,15 @@ LINKER_SCRIPT_DEP+=
 # AVR32/GNU C Compiler
 
 
+
+
+
+External/%.o: ../External/%.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -I"../External"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega1284p -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
 
 ./%.o: .././%.c
 	@echo Building file: $<

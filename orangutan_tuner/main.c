@@ -13,6 +13,7 @@
 #include <avr/io.h>
 #include <stdbool.h>
 #include <ffft.h>
+#include <libfft.h>
 
 const int		NOISE = 30;
 
@@ -30,11 +31,11 @@ uint16_t		fftOutput[FFT_N/2];
 uint16_t		largest_bin_val;
 int				predom_freq_bin;
 
-unsigned long volatile	g_prev_time;
-unsigned long volatile	g_num_ticks;
+//unsigned long volatile	g_prev_ticks;
+//unsigned long volatile	g_elapsed_time;
 
-int g_max = 0;
-int g_min = 1023;
+//long g_max = 0;
+//long g_min = 1023;
 
 int main()
 {
@@ -46,16 +47,19 @@ int main()
 	OCR3A = 31249; //Interrupt at 10Hz
 	TIMSK3 = (1 << OCIE3A); //Enable interrupts from Timer 3
 	
-	/* Start Timer 0 in CTC mode to fire at 15,923.6 Hz to govern ADC */
-	TCCR0A = (1 << COM0A1) | (1 << COM0A0) | (1 << WGM01);
-	TCCR0B = (1 << CS01); //Prescaler 8
-	OCR0A  =157;
+	/* Start Timer 0 in CTC mode to fire at 15,923.6 Hz to govern ADC 
+	   Or it would, if its top rate weren't 12048.2 Hz
+	   Not needed at this time */
+	//TCCR0A = (1 << COM0A1) | (1 << COM0A0) | (1 << WGM01);
+	//TCCR0B = (1 << CS01); //Prescaler 8
+	//OCR0A  = 157;
+	//TIMSK0 = (1 << OCIE0A);
 
-	/* Enable the ADC and start the conversion with auto-triggering on Timer 0 Comp A 	
-*/
+	/* Enable the ADC and start the conversion */
 	ADMUX = (1 << REFS0);
-	ADCSRA = (1 << ADEN) | /*(1 << ADSC)|*/ (1 << ADATE) | (1 << ADIE) | (1 << ADPS0) | (1 << ADPS1) | (1 << ADPS2);
-	ADCSRB = (1 << ADTS1) | (1 << ADTS0);
+	ADCSRA = (1 << ADEN) | (1 << ADSC)| (1 << ADATE) | (1 << ADIE) | (1 << ADPS0) | (1 << ADPS1) | (1 << ADPS2);
+	ADCSRB = 0; //Free run mode
+	//ADCSRB = (1 << ADTS1) | (1 << ADTS0);  //Auto-trigger on Timer 0, Comp A
 	DIDR0 = (1 << ADC0D);
 
 	sei(); 
@@ -96,23 +100,21 @@ int main()
 		{
 			clear();
 			
-			//lcd_goto_xy(0,0);
-			//print_long(predom_freq_bin);
-			//lcd_goto_xy(0,1);
-			//print_long(largest_bin_val);
+			lcd_goto_xy(0,0);
+			print_long(predom_freq_bin);
+			lcd_goto_xy(0,1);
+			print_long(largest_bin_val);
 			
 			/* Used for getting timing of the ADC */
-			lcd_goto_xy(0,0);
-			print_long(g_num_ticks);
-			lcd_goto_xy(0,1);
-			print_long(counter);
+			//lcd_goto_xy(0,0);
+			//print_long(g_elapsed_time);
 			
 			/* Used for testing microphone gain */
 			//lcd_goto_xy(0,0);
 			//print_long(g_max);
 			//lcd_goto_xy(0,1);
 			//print_long(g_min);
-			
+			//
 			g_update_lcd = false;
 		}
 	}
@@ -123,17 +125,23 @@ ISR(TIMER3_COMPA_vect)
 	g_update_lcd = true;
 }
 
+//ISR(TIMER0_COMPA_vect)
+//{
+	////Do nothing, this is just needed to make the ADC start another conversion
+	////in auto-trigger mode on Timer 0, Comp A
+//}
+
 ISR(ADC_vect)
 {
-	/* Find the number of ticks between interrupts */
-	long curr_time = get_ticks();
-	
-	g_num_ticks = curr_time - g_prev_time;
-	g_prev_time = curr_time;
-	/* It's 208 when run wide open*/
+	/* Find the elapsed time between interrupt firings */
+	//long curr_ticks = get_ticks();
+	//
+	//g_elapsed_time = ticks_to_microseconds(curr_ticks - g_prev_ticks);
+	//g_prev_ticks = curr_ticks;
+	/* It's 83 us when run wide open*/
 	
 	g_adc_output = ADC;
-	counter++;
+	
 	/* Code used for testing microphone gain */
 	//if(g_adc_output > g_max)
 		//g_max = g_adc_output;

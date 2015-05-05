@@ -139,6 +139,12 @@
     <Compile Include="External\ffft.S">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="External\libfft.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="External\libfft.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
