@@ -10,6 +10,7 @@
  * implied warranty.
  *
  * minor midifications July 2012 Bjorn Roche
+ * Adjustment to Max FFT Size by Seth Rowan
  */
 
 #ifndef __LIBFFT_C_
@@ -21,7 +22,8 @@
 
 //#define MAXFFTSIZE 32768 //Too big
 #define MAXFFTSIZE 8192
-#define LOG2_MAXFFTSIZE 15
+//#define LOG2_MAXFFTSIZE 15
+#define LOG2_MAXFFTSIZE 13
 
 struct fft_s {
    int bitreverse[MAXFFTSIZE];

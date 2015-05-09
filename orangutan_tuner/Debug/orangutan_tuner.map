@@ -121,7 +121,7 @@ Discarded input sections
  .debug_aranges
                 0x00000000       0x30 External/libfft.o
  .debug_ranges  0x00000000       0x20 External/libfft.o
- .debug_line    0x00000000      0x20c External/libfft.o
+ .debug_line    0x00000000      0x20d External/libfft.o
  .debug_str     0x00000000      0x22a External/libfft.o
  .comment       0x00000000       0x31 External/libfft.o
  .debug_frame   0x00000000       0xe0 External/libfft.o
